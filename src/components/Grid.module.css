@@ -1,0 +1,27 @@
+.game-box {
+  background-color: black;
+  border: solid grey 2px;
+  border-radius: 5px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  font-weight: 600;
+  font-family: Geneva, Verdana, sans-serif;
+  height: 60px;
+  width: 60px;
+}
+
+.game-row {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.game-grid {
+  margin: auto;
+  margin-top: 20px;
+  width: fit-content;
+}

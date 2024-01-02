@@ -1,0 +1,11 @@
+.navbar {
+  border-bottom: solid grey 1px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  font-family: "Times New Roman", Times, serif;
+  height: 70px;
+  width: 100vw;
+}
