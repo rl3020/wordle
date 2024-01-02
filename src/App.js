@@ -1,5 +1,6 @@
 import styles from "./App.module.css";
 import GameGrid from "./components/Grid";
+import Keyboard from "./components/Keyboard";
 
 const Navbar = () => {
   return (
@@ -14,6 +15,7 @@ function App() {
     <>
       <Navbar />
       <GameGrid />
+      <Keyboard />
     </>
   );
 }

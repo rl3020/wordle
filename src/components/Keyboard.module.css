@@ -1,0 +1,33 @@
+.keyboard-key {
+  color: white;
+  background-color: grey;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  min-height: 55px;
+  padding: 5px;
+  min-width: 40px;
+  width: fit-content;
+}
+
+.keyboard-key:hover {
+  cursor: pointer;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
