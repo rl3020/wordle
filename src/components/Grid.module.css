@@ -1,7 +1,6 @@
 .game-box {
   background-color: black;
   border: solid grey 2px;
-  border-radius: 5px;
   color: white;
   display: flex;
   align-items: center;

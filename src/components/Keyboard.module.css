@@ -1,6 +1,7 @@
 .keyboard-key {
   color: white;
   background-color: grey;
+  border: none;
   border-radius: 3px;
   display: flex;
   align-items: center;
