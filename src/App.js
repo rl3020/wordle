@@ -153,10 +153,27 @@ const continueGame = (guessIndex, isGameComplete) => {
 
 const isValidUserInput = (inputLetter) => {
   function isLetter(char) {
-    return /^[a-zA-Z]$/.test(char) || char === "Backspace" || char === "Enter";
+    return (
+      /^[a-zA-Z]$/.test(char) ||
+      // keyboard commands
+      char === "Backspace" ||
+      char === "Enter" ||
+      // html keyboard commands
+      char === "DELETE" ||
+      char === "ENTER"
+    );
   }
   if (isLetter(inputLetter)) return true;
   else return false;
+};
+
+const cleanUserInput = (inputLetter) => {
+  switch (inputLetter) {
+    case "DELETE":
+      return "BACKSPACE";
+    default:
+      return inputLetter.toUpperCase();
+  }
 };
 
 function App() {
@@ -185,10 +202,9 @@ function App() {
   };
 
   const handleUserInput = (inputLetter) => {
-    console.log("User inputed :", inputLetter);
     if (!continueGame(guessIndex, isGameComplete)) return;
     if (!isValidUserInput(inputLetter)) return;
-    inputLetter = inputLetter.toUpperCase();
+    inputLetter = cleanUserInput(inputLetter);
 
     const currentGuess = gameGrid[guessIndex]["word"];
 
