@@ -5,3 +5,8 @@ body {
   background-color: black;
   width: 100vw;
 }
+
+a {
+  text-decoration: none;
+  color: white;
+}

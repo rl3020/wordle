@@ -63,7 +63,7 @@ const GameGrid = ({ gameGrid }) => {
 
   // Render all rows within the game grid.
   return (
-    <div className={styles["game-grid"]}>
+    <div>
       {gameRows.map((gameRow, idx) => {
         const currentGuess = gameGrid[gameRow]["word"];
         const currentColors = gameGrid[gameRow]["color"];

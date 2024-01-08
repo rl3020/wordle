@@ -3,21 +3,15 @@ import GameGrid from "./components/Grid";
 import Keyboard from "./components/Keyboard";
 import fiveLetterWords from "./5-letter-words";
 import { useEffect, useState } from "react";
+import gptImage from "./gpt.webp";
 
+// Helper functions to mostly manage gameplay.
 const getRandomWord = () => {
   const randomIndex = Math.floor(Math.random() * fiveLetterWords.length);
   return fiveLetterWords[randomIndex];
 };
 
 const ANSWER = getRandomWord().toUpperCase();
-
-const Navbar = () => {
-  return (
-    <header className={styles["navbar"]}>
-      <h1>Wordle</h1>
-    </header>
-  );
-};
 
 const getBoxColor = (currentGuess, keyboardUtilities) => {
   const getCharCount = () => {
@@ -176,6 +170,75 @@ const cleanUserInput = (inputLetter) => {
   }
 };
 
+// Components
+const Navbar = () => {
+  return (
+    <header className={styles["navbar"]}>
+      <a href="/">
+        <h1>Wordle</h1>
+      </a>
+    </header>
+  );
+};
+
+const ChallengeGPTButton = ({ setIsChatGptChallenged }) => {
+  const handleClick = () => {
+    setIsChatGptChallenged(true);
+  };
+  return (
+    <button onClick={handleClick} className={styles["challenge-gpt-btn"]}>
+      Challenge ChatGPT 🫡
+    </button>
+  );
+};
+
+const GptTextbox = ({ text, isActive }) => {
+  return (
+    <div
+      className={`${styles["gpt-textbox"]} ${
+        isActive ? "" : styles["not-active"]
+      }`}
+    >
+      <span>{text}</span>
+    </div>
+  );
+};
+
+const GPT = ({ isGptChallenged }) => {
+  const [activeMessage, setActiveMessage] = useState(
+    "You have summoned me, GPT. What fools ..."
+  );
+
+  const [pastMessages, setPastMessages] = useState([]);
+
+  useEffect(() => {
+    
+  });
+
+  return (
+    <div
+      className={styles["gpt"]}
+      style={{ display: isGptChallenged ? "flex" : "none" }}
+    >
+      <img
+        alt={"This is gpt."}
+        className={styles["gpt-image"]}
+        src={gptImage}
+      />
+      <div>
+        {/* Current text */}
+        <GptTextbox text={activeMessage} isActive={true} />
+        {/* Past messages */}
+        <div className={styles["gpt-textbox-wrapper"]}>
+          {pastMessages.map((messageText) => {
+            return <GptTextbox text={messageText} isActive={false} />;
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [gameGrid, setGameGrid] = useState({
     0: { word: "", color: "BBBBB" },
@@ -187,6 +250,7 @@ function App() {
   });
   const [guessIndex, setGuessIndex] = useState(0);
   const [isGameComplete, setIsGameComplete] = useState(false);
+  const [isGptChallenged, setIsChatGptChallenged] = useState(false);
   const [keyColors, setKeyColors] = useState({});
   const gameUtilities = {
     gameGrid: gameGrid,
@@ -200,7 +264,6 @@ function App() {
     keyColors: keyColors,
     setKeyColors: setKeyColors,
   };
-
   const handleUserInput = (inputLetter) => {
     if (!continueGame(guessIndex, isGameComplete)) return;
     if (!isValidUserInput(inputLetter)) return;
@@ -214,7 +277,6 @@ function App() {
       updateGuess(currentGuess, inputLetter, gameUtilities);
     }
   };
-
   useEffect(() => {
     const handleKeyDown = (event) => {
       handleUserInput(event.key);
@@ -230,8 +292,19 @@ function App() {
   return (
     <>
       <Navbar />
-      <GameGrid gameGrid={gameGrid} />
-      <Keyboard keyColors={keyColors} handleUserInput={handleUserInput} />
+      <div className={styles["summoning-gpt"]}>
+        {/* game wrapper here */}
+        <div
+          className={`${styles["game-wrapper"]}
+          ${!isGptChallenged ? styles["horizontally-center"] : ""}  
+          `}
+        >
+          <GameGrid gameGrid={gameGrid} />
+          <Keyboard keyColors={keyColors} handleUserInput={handleUserInput} />
+          <ChallengeGPTButton setIsChatGptChallenged={setIsChatGptChallenged} />
+        </div>
+        <GPT isGptChallenged={isGptChallenged} />
+      </div>
     </>
   );
 }
