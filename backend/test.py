@@ -17,19 +17,37 @@ class Gpt:
         The character Y will be in the same index of the letter(s) that are in the unknown word, but NOT in the correct position. 
         The character R will be in the same index of the letter(s) that are not in the unknown word.
         """
-        self.is_gpt_initialized = False
         self.gpt_messages = [
             {"role": "system", "content": self.wordle_instructions}]
         self.guess_number = 0
 
-    def initialize_gpt(self):
+    def gpt_guess(self, prev_guess_result=None):
         """
-        Returns a chat completion object.
-        Parse with completion.choices[0].message.content[KEY]
+        Params:
+        prev_guess_result: string indicating correctness of gpts guess
+        Returns:
+        Dictionary representing gpts guess and a sassy comment to come along with it.
+        {
+            "guess" : "SNAKE"
+            "sassy_response":"This is a sassy response"
+        }
         """
-        # Append a new message to make GPT's first guess.
+        prompt = ""
+
+        if self.guess_number == 0:
+            # GPT's first guess.
+            prompt = "The wordle game has started. Make your first guess."
+        else:
+            prompt = "Your previous guess resulted in the string: " + prev_guess_result
+            prompt += ". Based on this information, make a new sassy guess and return your guess in the same JSON scheme."
+            prompt += "You have " + \
+                str(5 - self.guess_number) + \
+                " guesses remaining. Also, why did you choose this new word?"
+
+        print("PROMPT: ", prompt)
+        # Append appropriate prompt to to messages list
         self.gpt_messages.append(
-            {"role": "user", "content": "The wordle game has started. Make your first guess."})
+            {"role": "user", "content": prompt})
 
         # Makes API call to GPT.
         completion = self.client.chat.completions.create(
@@ -38,12 +56,5 @@ class Gpt:
             messages=self.gpt_messages
         )
 
-        # Updates state vars about gpt guesses.
-        self.is_gpt_initialized = True
         self.guess_number += 1
-
-        return completion
-
-    def make_new_guess(self, previous_guess_result):
-        prompt_content = ""
-        pass
+        return completion.choices[0].message.content

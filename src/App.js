@@ -204,7 +204,8 @@ const GptTextbox = ({ text, isActive }) => {
   );
 };
 
-const GPT = ({ isGptChallenged }) => {
+// GPT makes guesses!!
+const GPT = ({ isGptChallenged, guessResult, createUserInput }) => {
   const [activeMessage, setActiveMessage] = useState(
     "You have summoned me, GPT. What fools ..."
   );
@@ -212,8 +213,42 @@ const GPT = ({ isGptChallenged }) => {
   const [pastMessages, setPastMessages] = useState([]);
 
   useEffect(() => {
-    
-  });
+    guessGpt();
+  }, []);
+
+  const guessGpt = async () => {
+    try {
+      const payload = { value: guessResult };
+      console.log("Loaded !!");
+      const response = await fetch("http://127.0.0.1:5000/api/gpt-guess", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
+      const result = await response.json();
+      console.log(result);
+      const gpt_guess = result["guess"];
+      const gpt_response = result["sassy_response"];
+
+      for (let i = 0; i < gpt_guess.length; i++) {
+        createUserInput(gpt_guess[i]);
+      }
+      setPastMessages([...pastMessages, activeMessage]);
+      setActiveMessage(gpt_response);
+
+      // Make a complete guess then press enter
+      createUserInput("ENTER");
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
 
   return (
     <div
@@ -230,8 +265,14 @@ const GPT = ({ isGptChallenged }) => {
         <GptTextbox text={activeMessage} isActive={true} />
         {/* Past messages */}
         <div className={styles["gpt-textbox-wrapper"]}>
-          {pastMessages.map((messageText) => {
-            return <GptTextbox text={messageText} isActive={false} />;
+          {pastMessages.map((messageText, idx) => {
+            return (
+              <GptTextbox
+                key={`gpt-text-box-${idx}`}
+                text={messageText}
+                isActive={false}
+              />
+            );
           })}
         </div>
       </div>
@@ -252,6 +293,7 @@ function App() {
   const [isGameComplete, setIsGameComplete] = useState(false);
   const [isGptChallenged, setIsChatGptChallenged] = useState(false);
   const [keyColors, setKeyColors] = useState({});
+  const [isNewGame, setIsNewGame] = useState(true);
   const gameUtilities = {
     gameGrid: gameGrid,
     setGameGrid: setGameGrid,
@@ -283,11 +325,24 @@ function App() {
     };
 
     document.addEventListener("keydown", handleKeyDown);
-
+    if (isNewGame) {
+      restartGame();
+      setIsNewGame(false);
+    }
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   });
+
+  const restartGame = async () => {
+    try {
+      const request = await fetch("http://127.0.0.1:5000/api/new-game", {
+        method: "POST",
+      });
+    } catch (error) {
+      console.log("Error fetching request.");
+    }
+  };
 
   return (
     <>
@@ -303,7 +358,15 @@ function App() {
           <Keyboard keyColors={keyColors} handleUserInput={handleUserInput} />
           <ChallengeGPTButton setIsChatGptChallenged={setIsChatGptChallenged} />
         </div>
-        <GPT isGptChallenged={isGptChallenged} />
+        {isGptChallenged ? (
+          <GPT
+            isGptChallenged={isGptChallenged}
+            guessResult={guessIndex === 0 ? "" : gameGrid[guessIndex]}
+            createUserInput={handleUserInput}
+          />
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );

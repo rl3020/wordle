@@ -1,38 +1,34 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from dotenv import load_dotenv
-from openai import OpenAI
+from test import Gpt
+import json
 
 load_dotenv()
 app = Flask(__name__)
-
-wordle_instructions = """
-    You are a sassy wordle solver. 
-    Output JSON that contains two fields. 
-    One called 'guess' to state your guess for the wordle game.
-    Another called 'sassy_response' to tell the user that you made a guess and why you made that guess but in a sassy tone.
-    """
-
-gpt_message_history = [{"role": "system", "content": wordle_instructions},
-                       {"role": "user", "content": "The wordle game has started. Make your first guess."}]
-
-is_gpt_initialized = False
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+gpt = Gpt()
 
 
-def initialize_gpt():
-    client = OpenAI()
-
-    completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        response_format={"type": "json_object"},
-        messages=gpt_message_history
-    )
-
-    print(completion.choices[0].message)
+@app.route('/api/new-game', methods=['POST'])
+def new_game():
+    global gpt
+    gpt = Gpt()
+    return jsonify({"new_game": True})
 
 
-@app.route('/api/gpt-guess')
+@app.route('/api/gpt-guess', methods=['POST'])
 def new_gpt_guess():
-    return jsonify({})
+    result_obj = json.loads(gpt.gpt_guess())
+    print("Res object type", result_obj)
+    guess = result_obj["guess"]
+    sassy_response = result_obj["sassy_response"]
+    return jsonify({"guess": guess, "sassy_response": sassy_response})
+
+
+@app.route('/home')
+def home():
+    return "<h1>Hello World!</h1>"
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@
 .pnp.js
 backend/env
 backend/.env
+backend/__pycache__
 # testing
 /coverage
 
